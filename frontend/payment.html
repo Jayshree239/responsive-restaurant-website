@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Checkout - Foodie Restaurant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+
+    .checkout-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 40px 0;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .checkout-container {
+      max-width: 900px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      padding: 0 20px;
+    }
+
+    @media (max-width: 768px) {
+      .checkout-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .checkout-section {
+      background: white;
+      border-radius: 10px;
+      padding: 25px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #667eea;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+      display: block;
+      font-size: 14px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: 0.3s ease;
+      box-sizing: border-box;
+      font-family: inherit;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 10px rgba(102, 126, 234, 0.2);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .order-summary-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+    }
+
+    .order-summary-item:last-child {
+      border-bottom: none;
+    }
+
+    .summary-total {
+      display: flex;
+      justify-content: space-between;
+      padding: 15px 0;
+      font-size: 18px;
+      font-weight: bold;
+      color: #d35400;
+      border-top: 2px solid #eee;
+      margin-top: 10px;
+    }
+
+    .btn-pay {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: 0.3s ease;
+    }
+
+    .btn-pay:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-pay:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .error-message {
+      color: #dc3545;
+      padding: 12px;
+      background: #f8d7da;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      display: none;
+      font-size: 14px;
+    }
+
+    .loading {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<!-- 🔥 Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="index.html">🍴 Foodie</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="menu.html">Menu</a></li>
+        <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+        <!-- User menu will be added here by auth.js -->
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Header -->
+<section class="checkout-header">
+  <h1>💳 Checkout</h1>
+  <p>Complete your order</p>
+</section>
+
+<!-- Checkout Form -->
+<div class="checkout-container">
+  <!-- Delivery Information -->
+  <div class="checkout-section">
+    <h2 class="section-title">📍 Delivery Information</h2>
+    
+    <div class="error-message" id="errorMessage"></div>
+
+    <form id="checkoutForm">
+      <div class="form-group">
+        <label for="name">👤 Full Name</label>
+        <input type="text" id="name" placeholder="Enter your full name" required>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">📱 Phone Number</label>
+        <input type="tel" id="phone" placeholder="Enter your phone number" required>
+      </div>
+
+      <div class="form-group">
+        <label for="address">🏠 Delivery Address</label>
+        <textarea id="address" placeholder="Enter your complete delivery address" required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="city">🏙️ City</label>
+        <input type="text" id="city" placeholder="Enter your city" required>
+      </div>
+
+      <div class="form-group">
+        <label for="zipcode">📮 Zip Code</label>
+        <input type="text" id="zipcode" placeholder="Enter zip code" required>
+      </div>
+
+      <button type="button" class="btn-pay" onclick="proceedToPayment()">
+        <span id="btnText">💳 Proceed to Payment</span>
+        <span class="loading" id="loading">
+          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          Processing...
+        </span>
+      </button>
+    </form>
+  </div>
+
+  <!-- Order Summary -->
+  <div class="checkout-section">
+    <h2 class="section-title">📋 Order Summary</h2>
+    
+    <div id="orderItems"></div>
+
+    <div class="summary-total">
+      <span>Total:</span>
+      <span>₹ <span id="totalAmount">0</span></span>
+    </div>
+
+    <div style="margin-top: 20px; padding: 15px; background: #f0f4ff; border-radius: 8px; font-size: 14px; color: #333;">
+      <p><strong>💡 Demo Payment:</strong></p>
+      <p>This is a payment simulation. Click "Proceed to Payment" to complete your order.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-dark text-white text-center py-3 mt-5">
+  <p class="mb-0">© 2026 Foodie Restaurant | All Rights Reserved</p>
+</footer>
+
+<script src="js/auth.js"></script>
+<script src="js/cart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// Redirect if not logged in
+if (!isLoggedIn()) {
+  window.location.href = "login.html";
+}
+
+// Get cart for summary
+const cart = getCart();
+
+// Pre-fill name from user profile
+function loadUserInfo() {
+  const user = getUser();
+  if (user && user.name) {
+    document.getElementById("name").value = user.name;
+  }
+}
+
+// Display order summary
+function displayOrderSummary() {
+  if (cart.length === 0) {
+    window.location.href = "cart.html";
+    return;
+  }
+
+  const orderItemsDiv = document.getElementById("orderItems");
+  let subtotal = 0;
+
+  orderItemsDiv.innerHTML = cart.map(item => {
+    const itemTotal = item.price * item.quantity;
+    subtotal += itemTotal;
+    return `
+      <div class="order-summary-item">
+        <span>${item.name} x ${item.quantity}</span>
+        <span>₹ ${itemTotal.toFixed(2)}</span>
+      </div>
+    `;
+  }).join("");
+
+  const tax = subtotal * 0.05;
+  const total = subtotal + tax;
+
+  const summary = `
+    <div class="order-summary-item" style="font-weight: 600;">
+      <span>Subtotal:</span>
+      <span>₹ ${subtotal.toFixed(2)}</span>
+    </div>
+    <div class="order-summary-item" style="font-weight: 600;">
+      <span>Tax (5%):</span>
+      <span>₹ ${tax.toFixed(2)}</span>
+    </div>
+  `;
+
+  orderItemsDiv.innerHTML += summary;
+  document.getElementById("totalAmount").textContent = total.toFixed(2);
+}
+
+// Proceed to payment
+async function proceedToPayment() {
+  const name = document.getElementById("name").value;
+  const phone = document.getElementById("phone").value;
+  const address = document.getElementById("address").value;
+  const city = document.getElementById("city").value;
+  const zipcode = document.getElementById("zipcode").value;
+  const errorMessage = document.getElementById("errorMessage");
+  const btnText = document.getElementById("btnText");
+  const loading = document.getElementById("loading");
+
+  errorMessage.style.display = "none";
+  errorMessage.textContent = "";
+
+  if (!name || !phone || !address || !city || !zipcode) {
+    errorMessage.textContent = "❌ All fields are required";
+    errorMessage.style.display = "block";
+    return;
+  }
+
+  const fullAddress = `${address}, ${city}, ${zipcode}`;
+
+  btnText.style.display = "none";
+  loading.style.display = "inline";
+
+  try {
+    // Place order
+    const orderData = await placeOrder(fullAddress, phone);
+    
+    // Store order info for confirmation page
+    sessionStorage.setItem("lastOrderId", orderData.order.id);
+    sessionStorage.setItem("lastOrderTotal", orderData.order.totalAmount);
+    
+    // Redirect to success/payment page
+    window.location.href = "payment-success.html";
+  } catch (err) {
+    errorMessage.textContent = err.message;
+    errorMessage.style.display = "block";
+    btnText.style.display = "inline";
+    loading.style.display = "none";
+  }
+}
+
+// Initialize
+loadUserInfo();
+displayOrderSummary();
+</script>
+
+</body>
+</html>

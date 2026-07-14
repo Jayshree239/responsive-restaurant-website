@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cart - Foodie Restaurant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+
+    .cart-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 60px 0;
+      text-align: center;
+    }
+
+    .cart-header h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .cart-container {
+      max-width: 900px;
+      margin: 40px auto;
+    }
+
+    .cart-item {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .item-info {
+      flex: 1;
+    }
+
+    .item-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .item-price {
+      color: #d35400;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .item-controls {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .quantity-control {
+      display: flex;
+      align-items: center;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    .quantity-control button {
+      background: none;
+      border: none;
+      width: 30px;
+      padding: 5px;
+      cursor: pointer;
+      color: #667eea;
+      font-weight: bold;
+    }
+
+    .quantity-control input {
+      width: 50px;
+      border: none;
+      text-align: center;
+      padding: 5px;
+    }
+
+    .btn-remove {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .btn-remove:hover {
+      background: #c82333;
+    }
+
+    .cart-summary {
+      background: white;
+      border-radius: 10px;
+      padding: 25px;
+      margin: 30px 0;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 18px;
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .summary-row:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .total {
+      font-size: 24px;
+      font-weight: bold;
+      color: #d35400;
+    }
+
+    .btn-checkout {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: 0.3s ease;
+    }
+
+    .btn-checkout:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-checkout:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .empty-cart {
+      text-align: center;
+      padding: 60px 20px;
+      background: white;
+      border-radius: 10px;
+      margin: 30px 0;
+    }
+
+    .empty-cart h2 {
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .empty-cart a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .loading {
+      display: none;
+    }
+
+    .error-message {
+      color: #dc3545;
+      padding: 15px;
+      background: #f8d7da;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .navbar-nav {
+      display: flex;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- 🔥 Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="index.html">🍴 Foodie</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="menu.html">Menu</a></li>
+        <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+        <!-- User menu will be added here by auth.js -->
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Header -->
+<section class="cart-header">
+  <h1>🛒 Shopping Cart</h1>
+  <p>Review your items before checkout</p>
+</section>
+
+<!-- Cart Items -->
+<div class="cart-container">
+  <div class="error-message" id="errorMessage"></div>
+  
+  <div id="cartItems"></div>
+
+  <div class="cart-summary">
+    <div class="summary-row">
+      <span>Subtotal:</span>
+      <span>₹ <span id="subtotal">0</span></span>
+    </div>
+    <div class="summary-row">
+      <span>Tax (5%):</span>
+      <span>₹ <span id="tax">0</span></span>
+    </div>
+    <div class="summary-row total">
+      <span>Total Amount:</span>
+      <span>₹ <span id="total">0</span></span>
+    </div>
+
+    <button class="btn-checkout" id="checkoutBtn">
+      <span id="btnText">Proceed to Checkout</span>
+      <span class="loading" id="loading">
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        Processing...
+      </span>
+    </button>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-dark text-white text-center py-3 mt-5">
+  <p class="mb-0">© 2026 Foodie Restaurant | All Rights Reserved</p>
+</footer>
+
+<script src="js/auth.js"></script>
+<script src="js/cart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// Redirect if not logged in
+if (!isLoggedIn()) {
+  window.location.href = "login.html";
+}
+
+// Display cart items
+function displayCart() {
+  const cart = getCart();
+  const cartItemsDiv = document.getElementById("cartItems");
+
+  if (cart.length === 0) {
+    cartItemsDiv.innerHTML = `
+      <div class="empty-cart">
+        <h2>Your cart is empty</h2>
+        <p>Add some delicious items from our menu</p>
+        <a href="menu.html" class="btn btn-primary mt-3">Continue Shopping</a>
+      </div>
+    `;
+    document.getElementById("checkoutBtn").disabled = true;
+    return;
+  }
+
+  cartItemsDiv.innerHTML = cart.map((item, index) => `
+    <div class="cart-item">
+      <div class="item-info">
+        <div class="item-name">${item.name}</div>
+        <div class="item-price">₹ ${item.price} each</div>
+      </div>
+      <div class="item-controls">
+        <div class="quantity-control">
+          <button onclick="decreaseQuantity('${item.menuId}')">−</button>
+          <input type="number" value="${item.quantity}" min="1" readonly>
+          <button onclick="increaseQuantity('${item.menuId}')">+</button>
+        </div>
+        <div style="min-width: 60px; text-align: right;">
+          <div style="font-weight: 600; color: #333;">₹ ${(item.price * item.quantity).toFixed(2)}</div>
+        </div>
+        <button class="btn-remove" onclick="removeItem('${item.menuId}')">Remove</button>
+      </div>
+    </div>
+  `).join("");
+
+  updateSummary();
+}
+
+// Increase quantity
+function increaseQuantity(menuId) {
+  const cart = getCart();
+  const item = cart.find(i => i.menuId === menuId);
+  if (item) {
+    item.quantity++;
+    saveCart(cart);
+    displayCart();
+  }
+}
+
+// Decrease quantity
+function decreaseQuantity(menuId) {
+  const cart = getCart();
+  const item = cart.find(i => i.menuId === menuId);
+  if (item && item.quantity > 1) {
+    item.quantity--;
+    saveCart(cart);
+    displayCart();
+  }
+}
+
+// Remove item
+function removeItem(menuId) {
+  removeFromCart(menuId);
+  displayCart();
+}
+
+// Update summary
+function updateSummary() {
+  const cart = getCart();
+  const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const tax = subtotal * 0.05;
+  const total = subtotal + tax;
+
+  document.getElementById("subtotal").textContent = subtotal.toFixed(2);
+  document.getElementById("tax").textContent = tax.toFixed(2);
+  document.getElementById("total").textContent = total.toFixed(2);
+}
+
+// Checkout
+document.getElementById("checkoutBtn").addEventListener("click", () => {
+  window.location.href = "payment.html";
+});
+
+// Initialize
+displayCart();
+</script>
+
+</body>
+</html>

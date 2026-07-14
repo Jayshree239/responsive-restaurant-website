@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Foodie Restaurant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- 🔥 Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="#">🍴 Foodie</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="menu.html">Menu</a></li>
+        <li class="nav-item"><a class="nav-link" href="about.html">About Us</a></li>
+        <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- 🔥 Hero Section -->
+<section class="hero-section d-flex align-items-center text-center text-white">
+  <div class="container">
+    <h1 class="display-4 fw-bold">Welcome to Foodie Restaurant</h1>
+    <p class="lead">Delicious Food Made With Love ❤️</p>
+    <a href="menu.html" class="btn btn-warning btn-lg mt-3">Explore Menu</a>
+  </div>
+</section>
+
+<!-- 🔥 About Preview -->
+<section class="py-5">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5"
+             class="img-fluid rounded shadow" alt="restaurant">
+      </div>
+      <div class="col-md-6 mt-4 mt-md-0">
+        <h2>Why Choose Us?</h2>
+        <p>
+          We serve fresh, hygienic and delicious food prepared by expert chefs.
+          Our restaurant offers a cozy ambiance and exceptional service.
+        </p>
+        <a href="about.html" class="btn btn-outline-dark">Read More</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 🔥 Features Section -->
+<section class="bg-light py-5">
+  <div class="container text-center">
+    <h2 class="mb-4">Our Specialities</h2>
+    <div class="row">
+
+      <div class="col-md-6 mb-4">
+        <div class="card about-card shadow border-0 h-100">
+          <div class="card-body">
+            <h4>🍕 Quality Food</h4>
+            <p>
+              We use fresh ingredients to deliver best taste.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 mb-4">
+        <div class="card about-card shadow border-0 h-100">
+          <div class="card-body">
+            <h4>🚚 Fast Service</h4>
+            <p>
+              Quick delivery and excellent customer service.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- 🔥 Footer -->
+<footer class="bg-dark text-white text-center py-3">
+  <p class="mb-0">© 2026 Foodie Restaurant | All Rights Reserved</p>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Auth and Cart Scripts -->
+<script src="js/auth.js"></script>
+<script src="js/cart.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const nav = document.getElementById("navLinks");
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  // Common links (always visible)
+  let commonLinks = `
+    <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
+    <li class="nav-item"><a class="nav-link" href="menu.html">Menu</a></li>
+    <li class="nav-item"><a class="nav-link" href="about.html">About Us</a></li>
+    <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+  `;
+
+  if (!user) {
+    nav.innerHTML = commonLinks + `
+      <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
+      <li class="nav-item"><a class="nav-link" href="register.html">Register</a></li>
+      <li class="nav-item"><a class="nav-link text-warning" href="login.html">Admin</a></li>
+    `;
+  } else {
+    if (user.role === "admin") {
+      nav.innerHTML = commonLinks + `
+        <li class="nav-item"><a class="nav-link" href="admin.html">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link text-danger" href="#" onclick="logout()">Logout</a></li>
+      `;
+    } else {
+      nav.innerHTML = commonLinks + `
+        <li class="nav-item"><a class="nav-link" href="cart.html">Cart</a></li>
+        <li class="nav-item"><a class="nav-link text-danger" href="#" onclick="logout()">Logout</a></li>
+      `;
+    }
+  }
+});
+</script>
+</body>
+</html>

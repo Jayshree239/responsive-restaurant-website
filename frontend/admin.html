@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard - Foodie Restaurant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+
+    .admin-navbar {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 15px 0;
+    }
+
+    .admin-header {
+      padding: 30px 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      margin-bottom: 30px;
+    }
+
+    .admin-header h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .admin-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .section-title {
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 3px solid #667eea;
+    }
+
+    .btn-add-item {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 20px;
+      transition: 0.3s ease;
+    }
+
+    .btn-add-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+      color: white;
+      text-decoration: none;
+    }
+
+    .menu-table {
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+
+    .table {
+      margin: 0;
+    }
+
+    .table thead {
+      background: #667eea;
+      color: white;
+    }
+
+    .table tbody tr {
+      border-bottom: 1px solid #eee;
+      transition: 0.2s ease;
+    }
+
+    .table tbody tr:hover {
+      background: #f8f9fa;
+    }
+
+    .table td {
+      vertical-align: middle;
+      padding: 15px;
+    }
+
+    .item-image {
+      width: 50px;
+      height: 50px;
+      border-radius: 5px;
+      object-fit: cover;
+    }
+
+    .item-name {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .item-category {
+      background: #e7f3ff;
+      color: #667eea;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .item-price {
+      color: #d35400;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .btn-edit,
+    .btn-delete {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      margin-right: 5px;
+      transition: 0.3s ease;
+    }
+
+    .btn-edit {
+      background: #007bff;
+      color: white;
+    }
+
+    .btn-edit:hover {
+      background: #0056b3;
+    }
+
+    .btn-delete {
+      background: #dc3545;
+      color: white;
+    }
+
+    .btn-delete:hover {
+      background: #c82333;
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .modal-header .btn-close {
+      filter: invert(1);
+    }
+
+    .form-group label {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 10px;
+      font-size: 14px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 10px rgba(102, 126, 234, 0.2);
+    }
+
+    .error-message {
+      color: #dc3545;
+      padding: 12px;
+      background: #f8d7da;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      display: none;
+      font-size: 14px;
+    }
+
+    .success-message {
+      color: #155724;
+      padding: 12px;
+      background: #d4edda;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      display: none;
+      font-size: 14px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      background: white;
+      border-radius: 10px;
+    }
+
+    .empty-state h2 {
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .loading {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<!-- 🔥 Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark admin-navbar">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="index.html">🍴 Foodie Admin</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="index.html">Back to Site</a></li>
+        <li class="nav-item"><a class="nav-link" href="javascript:logout();">🚪 Logout</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Header -->
+<section class="admin-header">
+  <div class="admin-container">
+    <h1>📊 Admin Dashboard</h1>
+    <p>Manage menu items and restaurant operations</p>
+  </div>
+</section>
+
+<!-- Main Content -->
+<div class="admin-container">
+  <div class="success-message" id="successMessage"></div>
+  <div class="error-message" id="errorMessage"></div>
+
+  <!-- Menu Management Section -->
+  <div>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+      <h2 class="section-title">🍽️ Menu Items</h2>
+      <button class="btn-add-item" data-bs-toggle="modal" data-bs-target="#addMenuModal">
+        + Add New Item
+      </button>
+    </div>
+
+    <div class="menu-table">
+      <table class="table" id="menuTable">
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="menuTableBody">
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 30px;">
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              Loading menu items...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Menu Modal -->
+<div class="modal fade" id="addMenuModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalTitle">➕ Add New Menu Item</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="error-message" id="modalErrorMessage"></div>
+
+        <form id="menuForm">
+          <input type="hidden" id="itemId">
+
+          <div class="form-group">
+            <label for="itemName">📝 Name</label>
+            <input type="text" id="itemName" required>
+          </div>
+
+          <div class="form-group">
+            <label for="itemDescription">📄 Description</label>
+            <textarea id="itemDescription" required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="itemCategory">🏷️ Category</label>
+            <select id="itemCategory" class="form-control" required>
+              <option value="">Select Category</option>
+              <option value="Starter">Starter</option>
+              <option value="Lunch">Lunch</option>
+              <option value="Dinner">Dinner</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="itemPrice">💰 Price (₹)</label>
+            <input type="number" id="itemPrice" min="0" step="0.01" required>
+          </div>
+
+          <div class="form-group">
+            <label for="itemImage">🖼️ Image URL</label>
+            <input type="url" id="itemImage" required>
+          </div>
+
+          <button type="button" class="btn btn-primary w-100" onclick="saveMenuItem()">
+            <span id="saveBtnText">Save Item</span>
+            <span class="loading" id="saveLoading">
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              Saving...
+            </span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-dark text-white text-center py-3 mt-5">
+  <p class="mb-0">© 2026 Foodie Restaurant | All Rights Reserved</p>
+</footer>
+
+<script src="js/auth.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+const API_URL = "http://localhost:5000/api";
+
+// Check if user is admin
+if (!isLoggedIn() || !isAdmin()) {
+  window.location.href = "login.html";
+}
+
+// Get token
+function getToken() {
+  return localStorage.getItem("token");
+}
+
+// Load menu items
+async function loadMenuItems() {
+  try {
+    const response = await fetch(`${API_URL}/menu`);
+    const items = await response.json();
+
+    const tableBody = document.getElementById("menuTableBody");
+    
+    if (items.length === 0) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align: center; padding: 30px;">
+            <p style="color: #999;">No menu items found</p>
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tableBody.innerHTML = items.map(item => `
+      <tr>
+        <td>
+          <img src="${item.image}" alt="${item.name}" class="item-image">
+        </td>
+        <td>
+          <div class="item-name">${item.name}</div>
+        </td>
+        <td>
+          <small>${item.description.substring(0, 30)}...</small>
+        </td>
+        <td>
+          <span class="item-category">${item.category}</span>
+        </td>
+        <td>
+          <div class="item-price">₹ ${item.price}</div>
+        </td>
+        <td>
+          <button class="btn-edit" onclick="editItem('${item._id}')">Edit</button>
+          <button class="btn-delete" onclick="deleteItem('${item._id}')">Delete</button>
+        </td>
+      </tr>
+    `).join("");
+  } catch (err) {
+    console.error("Error loading menu:", err);
+    document.getElementById("errorMessage").textContent = "Failed to load menu items";
+    document.getElementById("errorMessage").style.display = "block";
+  }
+}
+
+// Open add menu modal
+document.getElementById("addMenuModal").addEventListener("show.bs.modal", () => {
+  document.getElementById("itemId").value = "";
+  document.getElementById("menuForm").reset();
+  document.getElementById("modalTitle").textContent = "➕ Add New Menu Item";
+  document.getElementById("modalErrorMessage").style.display = "none";
+});
+
+// Edit item
+async function editItem(itemId) {
+  try {
+    const response = await fetch(`${API_URL}/menu/${itemId}`);
+    const item = await response.json();
+
+    document.getElementById("itemId").value = item._id;
+    document.getElementById("itemName").value = item.name;
+    document.getElementById("itemDescription").value = item.description;
+    document.getElementById("itemCategory").value = item.category;
+    document.getElementById("itemPrice").value = item.price;
+    document.getElementById("itemImage").value = item.image;
+    document.getElementById("modalTitle").textContent = "✏️ Edit Menu Item";
+
+    const modal = new bootstrap.Modal(document.getElementById("addMenuModal"));
+    modal.show();
+  } catch (err) {
+    alert("Error loading item: " + err.message);
+  }
+}
+
+// Save menu item
+async function saveMenuItem() {
+  const itemId = document.getElementById("itemId").value;
+  const name = document.getElementById("itemName").value;
+  const description = document.getElementById("itemDescription").value;
+  const category = document.getElementById("itemCategory").value;
+  const price = document.getElementById("itemPrice").value;
+  const image = document.getElementById("itemImage").value;
+  const errorDiv = document.getElementById("modalErrorMessage");
+  const saveBtnText = document.getElementById("saveBtnText");
+  const saveLoading = document.getElementById("saveLoading");
+
+  if (!name || !description || !category || !price || !image) {
+    errorDiv.textContent = "❌ All fields are required";
+    errorDiv.style.display = "block";
+    return;
+  }
+
+  errorDiv.style.display = "none";
+  saveBtnText.style.display = "none";
+  saveLoading.style.display = "inline";
+
+  try {
+    const method = itemId ? "PUT" : "POST";
+    const url = itemId ? `${API_URL}/menu/${itemId}` : `${API_URL}/menu`;
+
+    const response = await fetch(url, {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${getToken()}`
+      },
+      body: JSON.stringify({ name, description, category, price, image })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Error saving item");
+    }
+
+    document.getElementById("successMessage").textContent = "✅ " + data.message;
+    document.getElementById("successMessage").style.display = "block";
+
+    // Close modal and reload
+    bootstrap.Modal.getInstance(document.getElementById("addMenuModal")).hide();
+    
+    setTimeout(() => {
+      loadMenuItems();
+      document.getElementById("successMessage").style.display = "none";
+    }, 1500);
+  } catch (err) {
+    errorDiv.textContent = "❌ " + err.message;
+    errorDiv.style.display = "block";
+    saveBtnText.style.display = "inline";
+    saveLoading.style.display = "none";
+  }
+}
+
+// Delete item
+async function deleteItem(itemId) {
+  if (!confirm("⚠️ Are you sure you want to delete this item?")) {
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/menu/${itemId}`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${getToken()}`
+      }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Error deleting item");
+    }
+
+    document.getElementById("successMessage").textContent = "✅ Item deleted successfully";
+    document.getElementById("successMessage").style.display = "block";
+
+    setTimeout(() => {
+      loadMenuItems();
+      document.getElementById("successMessage").style.display = "none";
+    }, 1500);
+  } catch (err) {
+    document.getElementById("errorMessage").textContent = "❌ " + err.message;
+    document.getElementById("errorMessage").style.display = "block";
+  }
+}
+
+// Initialize
+loadMenuItems();
+</script>
+
+</body>
+</html>
