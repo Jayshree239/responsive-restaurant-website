@@ -409,20 +409,6 @@ Solution: Change PORT in .env or kill process
 
 ---
 
-## 📄 License
-
-This project is open source and available under the MIT License.
-
----
-
-## 👨‍💻 Author
-
-Built with ❤️ for food lovers!
-
-For questions or support, contact: bhagyashriwalunj05@gmail.com
-
----
-
 ## 🎯 Next Steps
 
 1. **Install Dependencies**
